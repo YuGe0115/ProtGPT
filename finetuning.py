@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 model_path = "/home/tongyi/protgpt/protgpt3"
 model = AutoModelForCausalLM.from_pretrained(model_path, torch_dtype="auto").to("cuda:3")  # 指定 GPU 3
 tokenizer = AutoTokenizer.from_pretrained(model_path)
+tokenizer.pad_token = tokenizer.eos_token
 
 # 加载 tokenized 数据集
 tokenized_dataset = load_from_disk("/home/tongyi/protgpt/tokenized_antibody_dataset")
