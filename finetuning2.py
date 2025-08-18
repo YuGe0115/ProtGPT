@@ -7,14 +7,16 @@ import matplotlib.pyplot as plt
 model_path = "/home/tongyi/protgpt/protgpt3"
 model = AutoModelForCausalLM.from_pretrained(model_path, torch_dtype="auto").to("cuda:3")
 tokenizer = AutoTokenizer.from_pretrained(model_path)
+# 设置 padding token 为 <|endoftext|>，确保与 prepare_data.py 一致
+if tokenizer.pad_token is None:
+    tokenizer.pad_token = tokenizer.eos_token
+    print("已设置 pad_token 为 eos_token: ", tokenizer.pad_token)
 
 # 加载 tokenized 数据集
 tokenized_dataset = load_from_disk("/home/tongyi/protgpt/tokenized_antibody_dataset")
-# 打印数据集大小和样本内容以验证
 print("训练集大小:", len(tokenized_dataset["train"]))
 print("验证集大小:", len(tokenized_dataset["validation"]))
 print("测试集大小:", len(tokenized_dataset["test"]))
-# 检查前 5 条训练集 input_ids
 for i in range(min(5, len(tokenized_dataset["train"]))):
     print(f"训练集序列 {i+1} input_ids 长度: {len(tokenized_dataset['train'][i]['input_ids'])}")
 
@@ -26,9 +28,8 @@ training_args = TrainingArguments(
     output_dir="/home/tongyi/protgpt/finetuned_protgpt2",
     overwrite_output_dir=True,
     num_train_epochs=3,
-    # 减小 batch size 至 4，预防 OOM
-    per_device_train_batch_size=4,
-    per_device_eval_batch_size=4,
+    per_device_train_batch_size=2,
+    per_device_eval_batch_size=2,
     eval_strategy="epoch",
     save_steps=200,
     save_total_limit=2,
@@ -38,7 +39,6 @@ training_args = TrainingArguments(
     push_to_hub=False,
     logging_dir="/home/tongyi/protgpt/finetuned_protgpt2_logs",
     logging_steps=10,
-    # 禁用 Accelerate 自动配置，确保单 GPU 行为
     no_cuda=False,
     disable_tqdm=False,
 )
@@ -55,7 +55,6 @@ trainer = Trainer(
 
 # 开始微调
 trainer.train()
-# 打印总步数和处理的样本数
 print("总步数:", trainer.state.global_step)
 print("处理的样本数:", trainer.state.global_step * training_args.per_device_train_batch_size)
 
