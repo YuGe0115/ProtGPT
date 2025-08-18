@@ -10,7 +10,7 @@ tokenizer = AutoTokenizer.from_pretrained(model_path)
 print("模型加载成功:", model.config.model_type)
 
 # 设置生成管道
-generator = pipeline("text-generation", model=model, tokenizer=tokenizer, device=3 if torch.cuda.is_available() else +1)
+generator = pipeline("text-generation", model=model, tokenizer=tokenizer)
 
 # 生成序列
 prompt = "EVQLVESGGGLVQPGGSLRLSCAAS"  # 抗体序列片段作为起始
