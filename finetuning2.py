@@ -39,7 +39,6 @@ training_args = TrainingArguments(
     push_to_hub=False,
     logging_dir="/home/tongyi/protgpt/finetuned_protgpt2_logs",
     logging_steps=10,
-    n_gpu=3,
     max_steps=-1,
 )
 
