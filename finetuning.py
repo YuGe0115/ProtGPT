@@ -30,7 +30,7 @@ training_args = TrainingArguments(
     fp16=True,  # 混合精度加速（需 GPU）
     push_to_hub=False,  # 离线保存
     logging_dir="/home/tongyi/protgpt/finetuned_protgpt2_logs",
-    logging_steps=100,  # 每 100 步记录日志
+    logging_steps=10,  # 每 10 步记录日志
     logging_strategy="steps",  # 显式指定 logging 方式
 )
 
