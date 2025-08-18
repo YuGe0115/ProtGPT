@@ -16,7 +16,7 @@ generator = pipeline("text-generation", model=model, tokenizer=tokenizer)
 prompt = "EVQLVESGGGLVQPGGSLRLSCAAS"  # 抗体序列片段作为起始
 generated_sequences = generator(
     prompt,
-    max_length=100,  # 输出总长度（包括prompt）
+    max_new_tokens=256,  # 输出总长度（包括prompt）
     num_return_sequences=3,  # 生成3条序列
     do_sample=True,  # 启用采样以增加多样性
     top_k=50,  # 采样时考虑前50个token
