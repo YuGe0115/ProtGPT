@@ -3,12 +3,12 @@ from transformers import AutoTokenizer
 from datasets import DatasetDict
 
 # 加载数据并添加 EOS 标记
-def add_eos(example):
-    example["text"] = example["text"] + "<|endoftext|>"
-    return example
+# def add_eos(example):
+#     example["text"] = example["text"] + "<|endoftext|>"
+#     return example
 
 dataset = load_dataset("text", data_files={"train": "/home/tongyi/protgpt/antibody.txt"})
-dataset = dataset.map(add_eos)
+# dataset = dataset.map(add_eos)
 
 # 分割数据集：70% 训练，15% 验证，15% 测试
 train_validtest = dataset["train"].train_test_split(test_size=0.3)  # 先分出 70% 训练 + 30% 其他
