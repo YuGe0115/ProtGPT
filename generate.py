@@ -34,7 +34,7 @@ generate_kwargs = {
 }
 
 # 输入提示
-prompt = ""
+prompt = "EVQ"
 inputs = tokenizer(prompt, return_tensors="pt").to(device)  # 确保输入在主 GPU (cuda:3)
 
 # 生成序列
