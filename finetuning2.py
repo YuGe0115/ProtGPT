@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 # 离线加载模型和分词器
 model_path = "/home/tongyi/protgpt/protgpt3"
-model = AutoModelForCausalLM.from_pretrained(model_path, torch_dtype="auto").to("cuda:3")
+model = AutoModelForCausalLM.from_pretrained(model_path, torch_dtype="auto")
 tokenizer = AutoTokenizer.from_pretrained(model_path)
 # 设置 padding token 为 <|endoftext|>，确保与 prepare_data.py 一致
 if tokenizer.pad_token is None:
@@ -39,8 +39,8 @@ training_args = TrainingArguments(
     push_to_hub=False,
     logging_dir="/home/tongyi/protgpt/finetuned_protgpt2_logs",
     logging_steps=10,
-    no_cuda=False,
-    disable_tqdm=False,
+    n_gpu=3,
+    max_steps=-1,
 )
 
 # 初始化 Trainer
