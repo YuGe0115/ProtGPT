@@ -51,6 +51,10 @@ trainer.save_model("/home/tongyi/protgpt/finetuned_protgpt2_final")
 tokenizer.save_pretrained("/home/tongyi/protgpt/finetuned_protgpt2_final")
 print("微调完成，模型已保存至 /home/tongyi/protgpt/finetuned_protgpt2_final")
 
+print("log_history:", log_history)
+print("train_loss:", train_loss)
+print("eval_loss:", eval_loss)
+
 # 绘制 loss 曲线
 # 提取训练过程中的日志历史，包含 train_loss 和 eval_loss
 log_history = trainer.state.log_history
