@@ -6,7 +6,7 @@ model_path = "/home/tongyi/protgpt/finetuned_protgpt2_final"
 tokenizer = AutoTokenizer.from_pretrained(model_path)
 model = AutoModelForCausalLM.from_pretrained(model_path, torch_dtype="auto")
 
-# 设置 padding token 和 eos token，与微调一致
+# 设置 padding token 和 eos token
 if tokenizer.pad_token is None:
     tokenizer.pad_token = tokenizer.eos_token if tokenizer.eos_token else "<pad>"
     print("已设置 pad_token: ", tokenizer.pad_token)
@@ -14,30 +14,28 @@ if tokenizer.eos_token is None:
     tokenizer.eos_token = "<|endoftext|>"
     print("已设置 eos_token: ", tokenizer.eos_token)
 
-# 多 GPU 支持
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+# 设置多 GPU
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")  # 主 GPU 为 cuda:0
 if torch.cuda.device_count() > 1:
-    print(f"使用 {torch.cuda.device_count()} 个 GPU")
-    model = torch.nn.DataParallel(model, device_ids=[3, 2])  # 使用 GPU 3 和 2
-else:
-    model = model.to(device)
+    model = torch.nn.DataParallel(model, device_ids=[0, 1])  # 映射到 cuda:0, cuda:1
+model = model.to(device)  # 确保模型在主 GPU
 model.eval()
 
 # 生成参数
 generate_kwargs = {
-    "max_length": 150,  # 与 prepare_data.py 的 max_length 一致
-    "num_return_sequences": 10,  # 生成 10 条序列
-    "do_sample": True,  # 随机采样
-    "top_k": 50,  # Top-k 采样
-    "top_p": 0.95,  # Top-p 采样
-    "temperature": 1.0,  # 控制随机性
+    "max_length": 150,
+    "num_return_sequences": 10,
+    "do_sample": True,
+    "top_k": 50,
+    "top_p": 0.95,
+    "temperature": 1.0,
     "pad_token_id": tokenizer.pad_token_id,
     "eos_token_id": tokenizer.eos_token_id,
 }
 
-# 输入提示（可选，空输入从头生成）
-prompt = ""  # 可设为抗体序列片段，例如 "EVQLV"
-inputs = tokenizer(prompt, return_tensors="pt").to(device)
+# 输入提示
+prompt = ""
+inputs = tokenizer(prompt, return_tensors="pt").to(device)  # 确保输入在主 GPU (cuda:3)
 
 # 生成序列
 with torch.no_grad():
@@ -50,7 +48,7 @@ sequences = [tokenizer.decode(output, skip_special_tokens=False) for output in o
 output_file = "/home/tongyi/protgpt/generated_sequences.txt"
 with open(output_file, "w") as f:
     for i, seq in enumerate(sequences):
-        print(f"序列 {i+1}: {seq[:50]}...")  # 打印前 50 个字符
+        print(f"序列 {i+1}: {seq[:50]}...")
         f.write(seq + "\n")
 
 print(f"生成序列已保存至 {output_file}")
