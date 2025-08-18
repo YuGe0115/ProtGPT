@@ -22,7 +22,7 @@ training_args = TrainingArguments(
     num_train_epochs=3,  # 3 个 epoch，适合 1800 条数据
     per_device_train_batch_size=4,  # 小 batch 避免 OOM
     per_device_eval_batch_size=4,
-    eval_strategy="epoch",  # 每个 epoch 评估
+    evaluation_strategy="epoch",  # 每个 epoch 评估
     save_steps=200,  # 每 200 步保存检查点
     save_total_limit=2,  # 保留最近 2 个检查点
     learning_rate=5e-5,  # 小学习率避免灾难性遗忘
@@ -31,6 +31,7 @@ training_args = TrainingArguments(
     push_to_hub=False,  # 离线保存
     logging_dir="/home/tongyi/protgpt/finetuned_protgpt2_logs",
     logging_steps=100,  # 每 100 步记录日志
+    logging_strategy="steps",  # 显式指定 logging 方式
 )
 
 # 初始化 Trainer
@@ -51,9 +52,6 @@ trainer.save_model("/home/tongyi/protgpt/finetuned_protgpt2_final")
 tokenizer.save_pretrained("/home/tongyi/protgpt/finetuned_protgpt2_final")
 print("微调完成，模型已保存至 /home/tongyi/protgpt/finetuned_protgpt2_final")
 
-print("log_history:", log_history)
-print("train_loss:", train_loss)
-print("eval_loss:", eval_loss)
 
 # 绘制 loss 曲线
 # 提取训练过程中的日志历史，包含 train_loss 和 eval_loss
@@ -63,6 +61,12 @@ train_loss = [log['loss'] for log in log_history if 'loss' in log]
 # 从日志中提取验证 loss（每个 epoch 记录一次）
 eval_loss = [log['eval_loss'] for log in log_history if 'eval_loss' in log]
 # 创建训练 loss 的步数（与 train_loss 长度一致）
+
+print("log_history:", log_history)
+print("train_loss:", train_loss)
+print("eval_loss:", eval_loss)
+
+
 steps = range(len(train_loss))
 # 绘制训练 loss 曲线
 plt.plot(steps, train_loss, label="Train Loss")
