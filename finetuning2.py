@@ -20,7 +20,6 @@ print("测试集大小:", len(tokenized_dataset["test"]))
 for i in range(min(5, len(tokenized_dataset["train"]))):
     print(f"训练集序列 {i+1} input_ids 长度: {len(tokenized_dataset['train'][i]['input_ids'])}")
 
-# 数据收集器（因果语言建模）
 data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
 
 # 训练参数
