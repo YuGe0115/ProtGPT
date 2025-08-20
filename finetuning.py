@@ -19,7 +19,7 @@ data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
 training_args = TrainingArguments(
     output_dir="/home/tongyi/protgpt/finetuned_protgpt2",
     overwrite_output_dir=True,
-    num_train_epochs=3,  # 3 个 epoch，适合 1800 条数据
+    num_train_epochs=3,  # 3 个 epoch，适合 1200 条数据
     per_device_train_batch_size=4,  # 小 batch 避免 OOM
     per_device_eval_batch_size=4,
     eval_strategy="epoch",  # 每个 epoch 评估
