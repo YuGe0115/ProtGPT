@@ -24,19 +24,19 @@ data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
 
 # 训练参数
 training_args = TrainingArguments(
-    output_dir="/home/tongyi/protgpt/finetuned_protgpt2",
+    output_dir="/mnt/ssd3/tongyi/finetuned_protgpt2_1",
     overwrite_output_dir=True,
-    num_train_epochs=3,
+    num_train_epochs=30,
     per_device_train_batch_size=5,
     per_device_eval_batch_size=5,
     eval_strategy="epoch",
-    save_steps=200,
-    save_total_limit=2,
+    save_steps=240,
+    save_total_limit=None,
     learning_rate=5e-5,
     weight_decay=0.01,
     fp16=True,
     push_to_hub=False,
-    logging_dir="/home/tongyi/protgpt/finetuned_protgpt2_logs",
+    logging_dir="/mnt/ssd3/tongyi/finetuned_protgpt2_1",
     logging_steps=10,
     max_steps=-1,
 )
