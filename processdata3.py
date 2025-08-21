@@ -83,10 +83,39 @@ train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, co
 val_loader = DataLoader(val_dataset, batch_size=batch_size, collate_fn=collate_fn)
 test_loader = DataLoader(test_dataset, batch_size=batch_size, collate_fn=collate_fn)
 
-# 示例: 迭代一个batch查看格式（Torch可识别的Tensor）
+# 迭代一个batch查看格式（Torch可识别的Tensor）
+# for batch in train_loader:
+#     print("Batch 示例:")
+#     print("input_ids shape:", batch['input_ids'].shape)  # e.g., torch.Size([8, max_len_in_batch])
+#     print("attention_mask shape:", batch['attention_mask'].shape)
+#     print("labels shape:", batch['labels'].shape)
+#     break  # 只看第一个batch
+
+# 验证 padding 情况
+print("检查 padding 情况：")
 for batch in train_loader:
     print("Batch 示例:")
-    print("input_ids shape:", batch['input_ids'].shape)  # e.g., torch.Size([8, max_len_in_batch])
+    print("input_ids shape:", batch['input_ids'].shape)  # 形状：[batch_size, max_len_in_batch]
     print("attention_mask shape:", batch['attention_mask'].shape)
     print("labels shape:", batch['labels'].shape)
-    break  # 只看第一个batch
+
+    # 打印第一个序列的 input_ids 和 attention_mask
+    print("\n第一个序列的 input_ids:", batch['input_ids'][0])
+    print("第一个序列的 attention_mask:", batch['attention_mask'][0])
+    print("第一个序列的 labels:", batch['labels'][0])
+
+    # 解码 input_ids，检查序列和 [PAD] token
+    decoded_seq = tokenizer.decode(batch['input_ids'][0], skip_special_tokens=False)
+    print("解码后的第一个序列:", decoded_seq)
+
+    # 检查 padding token 的出现
+    pad_token_id = tokenizer.pad_token_id
+    print(f"pad_token_id: {pad_token_id}")
+    pad_count = (batch['input_ids'] == pad_token_id).sum().item()
+    print(f"batch 中 [PAD] token 总数: {pad_count}")
+
+    # 统计 batch 中每个序列的实际长度（基于 attention_mask）
+    seq_lengths = batch['attention_mask'].sum(dim=1).tolist()
+    print("batch 中各序列的实际长度（不含 padding）:", seq_lengths)
+
+    break  # 只检查第一个 batch
