@@ -36,18 +36,31 @@ class ProteinDataset(Dataset):
         return len(self.sequences)
 
     def __getitem__(self, idx):
-        seq = self.sequences[idx]
-        # Tokenize并添加EOS
+        seq = self.sequences[idx] + '<|endoftext|>'  # 手动添加 EOS
         encoding = self.tokenizer(
             seq,
-            add_special_tokens=True,  # 自动添加EOS (ProtGPT2的默认行为)
             max_length=self.max_length,
             truncation=True,
             return_tensors="pt"
         )
-        input_ids = encoding['input_ids'].squeeze(0)  # 移除batch维度
-        attention_mask = encoding['attention_mask'].squeeze(0)
-        return {'input_ids': input_ids, 'attention_mask': attention_mask}
+        return {
+            'input_ids': encoding['input_ids'].squeeze(0),
+            'attention_mask': encoding['attention_mask'].squeeze(0)
+        }
+
+    # def __getitem__(self, idx):
+        # seq = self.sequences[idx]
+        # # Tokenize并添加EOS
+        # encoding = self.tokenizer(
+        #     seq,
+        #     add_special_tokens=True,  # 自动添加EOS (ProtGPT2的默认行为)
+        #     max_length=self.max_length,
+        #     truncation=True,
+        #     return_tensors="pt"
+        # )
+        # input_ids = encoding['input_ids'].squeeze(0)  # 移除batch维度
+        # attention_mask = encoding['attention_mask'].squeeze(0)
+        # return {'input_ids': input_ids, 'attention_mask': attention_mask}
 
 # 创建Dataset实例
 train_dataset = ProteinDataset(train_seqs, tokenizer)
