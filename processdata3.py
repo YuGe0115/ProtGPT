@@ -98,6 +98,24 @@ train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, co
 val_loader = DataLoader(val_dataset, batch_size=batch_size, collate_fn=collate_fn)
 test_loader = DataLoader(test_dataset, batch_size=batch_size, collate_fn=collate_fn)
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # 迭代一个batch查看格式（Torch可识别的Tensor）
 # for batch in train_loader:
 #     print("Batch 示例:")
@@ -105,6 +123,24 @@ test_loader = DataLoader(test_dataset, batch_size=batch_size, collate_fn=collate
 #     print("attention_mask shape:", batch['attention_mask'].shape)
 #     print("labels shape:", batch['labels'].shape)
 #     break  # 只看第一个batch
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # 验证 padding 情况
 # print("检查 padding 情况：")
@@ -135,43 +171,144 @@ test_loader = DataLoader(test_dataset, batch_size=batch_size, collate_fn=collate
 
 #     break  # 只检查第一个 batch
 
+
+
+
+
+
+
+
+
 # 验证 padding 和 EOS
-print("验证 padding 和 EOS：")
-for batch in train_loader:
-    print("Batch 示例:")
-    print("input_ids shape:", batch['input_ids'].shape)
-    print("attention_mask shape:", batch['attention_mask'].shape)
-    print("labels shape:", batch['labels'].shape)
+# print("验证 padding 和 EOS：")
+# for batch in train_loader:
+#     print("Batch 示例:")
+#     print("input_ids shape:", batch['input_ids'].shape)
+#     print("attention_mask shape:", batch['attention_mask'].shape)
+#     print("labels shape:", batch['labels'].shape)
 
-    # 获取 pad_token_id 和 eos_token_id
-    pad_token_id = tokenizer.pad_token_id
-    eos_token_id = tokenizer.eos_token_id
-    print(f"pad_token_id: {pad_token_id}, eos_token: {eos_token_id}")
+#     # 获取 pad_token_id 和 eos_token_id
+#     pad_token_id = tokenizer.pad_token_id
+#     eos_token_id = tokenizer.eos_token_id
+#     print(f"pad_token_id: {pad_token_id}, eos_token: {eos_token_id}")
 
-    # 检查第一个序列
-    for i in range(min(2, batch_size)):  # 检查 batch 中前 2 个序列
-        input_ids = batch['input_ids'][i]
-        attention_mask = batch['attention_mask'][i]
-        labels = batch['labels'][i]
+#     # 检查第一个序列
+#     for i in range(min(2, batch_size)):  # 检查 batch 中前 2 个序列
+#         input_ids = batch['input_ids'][i]
+#         attention_mask = batch['attention_mask'][i]
+#         labels = batch['labels'][i]
 
-        # 解码序列，包含特殊 token
-        decoded_seq = tokenizer.decode(input_ids, skip_special_tokens=False)
-        print(f"\n序列 {i+1} 解码:", decoded_seq)
+#         # 解码序列，包含特殊 token
+#         decoded_seq = tokenizer.decode(input_ids, skip_special_tokens=False)
+#         print(f"\n序列 {i+1} 解码:", decoded_seq)
 
-        # 检查 padding：padding 部分应为 pad_token_id
-        padding_positions = input_ids == pad_token_id
-        if padding_positions.any():
-            print(f"序列 {i+1} 有 padding，位置: {padding_positions.nonzero(as_tuple=True)[0].tolist()}")
-            print(f"padding 部分是否为 [PAD]: {(input_ids[padding_positions] == pad_token_id).all().item()}")
-            print(f"padding 部分是否不用 EOS: {(input_ids[padding_positions] != eos_token_id).all().item()}")
+#         # 检查 padding：padding 部分应为 pad_token_id
+#         padding_positions = input_ids == pad_token_id
+#         if padding_positions.any():
+#             print(f"序列 {i+1} 有 padding，位置: {padding_positions.nonzero(as_tuple=True)[0].tolist()}")
+#             print(f"padding 部分是否为 [PAD]: {(input_ids[padding_positions] == pad_token_id).all().item()}")
+#             print(f"padding 部分是否不用 EOS: {(input_ids[padding_positions] != eos_token_id).all().item()}")
 
-        # 检查 EOS：有效序列末尾（最后一个 1 后的 token）应为 eos_token_id
-        valid_length = attention_mask.sum().item()  # 有效长度
-        if valid_length > 1:  # 确保序列非空
-            last_valid_token = input_ids[valid_length - 1]
-            print(f"序列 {i+1} 有效部分末尾 token: {last_valid_token}, 是否为 EOS: {last_valid_token == eos_token_id}")
+#         # 检查 EOS：有效序列末尾（最后一个 1 后的 token）应为 eos_token_id
+#         valid_length = attention_mask.sum().item()  # 有效长度
+#         if valid_length > 1:  # 确保序列非空
+#             last_valid_token = input_ids[valid_length - 1]
+#             print(f"序列 {i+1} 有效部分末尾 token: {last_valid_token}, 是否为 EOS: {last_valid_token == eos_token_id}")
 
-        # 验证 labels 的 padding 部分
-        print(f"序列 {i+1} labels padding 是否为 -100: {(labels[padding_positions] == -100).all().item()}")
+#         # 验证 labels 的 padding 部分
+#         print(f"序列 {i+1} labels padding 是否为 -100: {(labels[padding_positions] == -100).all().item()}")
 
-    break  # 只检查第一个 batch
+#     break  # 只检查第一个 batch
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+from transformers import Trainer, TrainingArguments
+import matplotlib.pyplot as plt
+import pandas as pd
+
+# 配置训练参数
+training_args = TrainingArguments(
+    output_dir="/mnt/ssd3/tongyi/finetuned",
+    num_train_epochs=20,
+    per_device_train_batch_size=5,
+    per_device_eval_batch_size=5,
+    evaluation_strategy="steps",
+    save_strategy="steps",
+    logging_steps=293,
+    save_steps=293,
+    learning_rate=1e-5,
+    save_total_limit=None,
+    load_best_model_at_end=True,
+    metric_for_best_model="eval_loss",
+    fp16=True,
+    logging_dir="/mnt/ssd3/tongyi/finetuned/logs",
+)
+
+# 创建 Trainer
+trainer = Trainer(
+    model=model,
+    args=training_args,
+    train_dataset=train_dataset,
+    eval_dataset=val_dataset,
+    data_collator=collate_fn,
+)
+
+# 训练
+trainer.train()
+
+# 保存模型和 tokenizer
+model.save_pretrained("/mnt/ssd3/tongyi/finetuned/final_model")
+tokenizer.save_pretrained("/mnt/ssd3/tongyi/finetuned/final_model")
+print("模型已保存到 /mnt/ssd3/tongyi/finetuned/final_model")
+
+# 提取 log 数据
+log_history = trainer.state.log_history
+train_loss = [log['loss'] for log in log_history if 'loss' in log]
+eval_loss = [log['eval_loss'] for log in log_history if 'eval_loss' in log]
+steps = [log['step'] for log in log_history if 'loss' in log or 'eval_loss' in log][:len(train_loss + eval_loss)]
+
+# 保存 log 到 CSV
+log_df = pd.DataFrame({
+    'step': [log['step'] for log in log_history],
+    'train_loss': [log.get('loss', None) for log in log_history],
+    'eval_loss': [log.get('eval_loss', None) for log in log_history]
+})
+log_df.to_csv("/mnt/ssd3/tongyi/finetuned/logs/training_log.csv", index=False)
+print("Log 已保存到 /mnt/ssd3/tongyi/finetuned/logs/training_log.csv")
+
+# 绘制 loss 曲线
+plt.plot([s for s, t in zip(steps, train_loss) if t], train_loss, label="Train Loss")
+plt.plot([s for s, e in zip(steps, eval_loss) if e], eval_loss, label="Eval Loss")
+plt.xlabel("Steps")
+plt.ylabel("Loss")
+plt.title("Training and Validation Loss")
+plt.legend()
+plt.savefig("/mnt/ssd3/tongyi/finetuned/loss_curve.png")
+plt.show()
+print("Loss 曲线已保存到 /mnt/ssd3/tongyi/finetuned/loss_curve.png")
