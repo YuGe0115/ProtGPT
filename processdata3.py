@@ -7,6 +7,8 @@ from sklearn.model_selection import train_test_split
 tokenizer = AutoTokenizer.from_pretrained("/home/tongyi/protgpt/protgpt3")
 if tokenizer.pad_token is None:
     tokenizer.add_special_tokens({'pad_token': '[PAD]'})
+if tokenizer.eos_token is None:
+    tokenizer.add_special_tokens({'eos_token': '<|endoftext|>'})
 
 # 读取TXT文件
 def read_sequences(file_path):
