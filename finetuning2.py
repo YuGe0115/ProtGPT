@@ -57,9 +57,9 @@ print("总步数:", trainer.state.global_step)
 print("处理的样本数:", trainer.state.global_step * training_args.per_device_train_batch_size)
 
 # 保存最终模型和分词器
-trainer.save_model("/home/tongyi/protgpt/finetuned_protgpt2_final")
-tokenizer.save_pretrained("/home/tongyi/protgpt/finetuned_protgpt2_final")
-print("微调完成，模型已保存至 /home/tongyi/protgpt/finetuned_protgpt2_final")
+trainer.save_model("/mnt/ssd3/tongyi/finetuned_protgpt2_1")
+tokenizer.save_pretrained("/mnt/ssd3/tongyi/finetuned_protgpt2_1")
+print("微调完成，模型已保存至 /mnt/ssd3/tongyi/finetuned_protgpt2_1")
 
 # 绘制 loss 曲线
 try:
@@ -78,8 +78,8 @@ try:
     plt.ylabel("Loss")
     plt.title("Training and Validation Loss Curve")
     plt.legend()
-    plt.savefig("/home/tongyi/protgpt/loss_curve.png")
+    plt.savefig("/mnt/ssd3/tongyi/loss_curve.png")
     plt.close()
-    print("Loss 曲线已保存至 /home/tongyi/protgpt/loss_curve.png")
+    print("Loss 曲线已保存至 /mnt/ssd3/tongyi/loss_curve.png")
 except AttributeError as e:
     print(f"错误: {e}. 请检查 trainer.train() 是否成功运行并生成日志。")
