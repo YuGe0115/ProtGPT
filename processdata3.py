@@ -1,10 +1,12 @@
 import torch
 from torch.utils.data import Dataset, DataLoader
-from transformers import AutoTokenizer
+from transformers import AutoTokenizer, AutoModelForCausalLM
 from sklearn.model_selection import train_test_split
 
 # 加载ProtGPT2 tokenizer
 tokenizer = AutoTokenizer.from_pretrained("/home/tongyi/protgpt/protgpt3")
+if tokenizer.pad_token is None:
+    tokenizer.add_special_tokens({'pad_token': '[PAD]'})
 
 # 读取TXT文件
 def read_sequences(file_path):
@@ -49,6 +51,12 @@ class ProteinDataset(Dataset):
 train_dataset = ProteinDataset(train_seqs, tokenizer)
 val_dataset = ProteinDataset(val_seqs, tokenizer)
 test_dataset = ProteinDataset(test_seqs, tokenizer)
+
+# 加载模型并调整词汇表大小
+model = AutoModelForCausalLM.from_pretrained("/home/tongyi/protgpt/protgpt3")
+# 由于添加了新的 pad_token，需调整模型的嵌入层大小
+model.resize_token_embeddings(len(tokenizer))  # 同步词汇表大小
+model.config.pad_token_id = tokenizer.pad_token_id  # 设置模型的 pad_token_id
 
 # 自定义collate_fn处理padding和labels
 def collate_fn(batch):
