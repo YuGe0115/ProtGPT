@@ -92,30 +92,71 @@ test_loader = DataLoader(test_dataset, batch_size=batch_size, collate_fn=collate
 #     break  # 只看第一个batch
 
 # 验证 padding 情况
-print("检查 padding 情况：")
+# print("检查 padding 情况：")
+# for batch in train_loader:
+#     print("Batch 示例:")
+#     print("input_ids shape:", batch['input_ids'].shape)  # 形状：[batch_size, max_len_in_batch]
+#     print("attention_mask shape:", batch['attention_mask'].shape)
+#     print("labels shape:", batch['labels'].shape)
+
+#     # 打印第一个序列的 input_ids 和 attention_mask
+#     print("\n第一个序列的 input_ids:", batch['input_ids'][0])
+#     print("第一个序列的 attention_mask:", batch['attention_mask'][0])
+#     print("第一个序列的 labels:", batch['labels'][0])
+
+#     # 解码 input_ids，检查序列和 [PAD] token
+#     decoded_seq = tokenizer.decode(batch['input_ids'][0], skip_special_tokens=False)
+#     print("解码后的第一个序列:", decoded_seq)
+
+#     # 检查 padding token 的出现
+#     pad_token_id = tokenizer.pad_token_id
+#     print(f"pad_token_id: {pad_token_id}")
+#     pad_count = (batch['input_ids'] == pad_token_id).sum().item()
+#     print(f"batch 中 [PAD] token 总数: {pad_count}")
+
+#     # 统计 batch 中每个序列的实际长度（基于 attention_mask）
+#     seq_lengths = batch['attention_mask'].sum(dim=1).tolist()
+#     print("batch 中各序列的实际长度（不含 padding）:", seq_lengths)
+
+#     break  # 只检查第一个 batch
+
+# 验证 padding 和 EOS
+print("验证 padding 和 EOS：")
 for batch in train_loader:
     print("Batch 示例:")
-    print("input_ids shape:", batch['input_ids'].shape)  # 形状：[batch_size, max_len_in_batch]
+    print("input_ids shape:", batch['input_ids'].shape)
     print("attention_mask shape:", batch['attention_mask'].shape)
     print("labels shape:", batch['labels'].shape)
 
-    # 打印第一个序列的 input_ids 和 attention_mask
-    print("\n第一个序列的 input_ids:", batch['input_ids'][0])
-    print("第一个序列的 attention_mask:", batch['attention_mask'][0])
-    print("第一个序列的 labels:", batch['labels'][0])
-
-    # 解码 input_ids，检查序列和 [PAD] token
-    decoded_seq = tokenizer.decode(batch['input_ids'][0], skip_special_tokens=False)
-    print("解码后的第一个序列:", decoded_seq)
-
-    # 检查 padding token 的出现
+    # 获取 pad_token_id 和 eos_token_id
     pad_token_id = tokenizer.pad_token_id
-    print(f"pad_token_id: {pad_token_id}")
-    pad_count = (batch['input_ids'] == pad_token_id).sum().item()
-    print(f"batch 中 [PAD] token 总数: {pad_count}")
+    eos_token_id = tokenizer.eos_token_id
+    print(f"pad_token_id: {pad_token_id}, eos_token: {eos_token_id}")
 
-    # 统计 batch 中每个序列的实际长度（基于 attention_mask）
-    seq_lengths = batch['attention_mask'].sum(dim=1).tolist()
-    print("batch 中各序列的实际长度（不含 padding）:", seq_lengths)
+    # 检查第一个序列
+    for i in range(min(2, batch_size)):  # 检查 batch 中前 2 个序列
+        input_ids = batch['input_ids'][i]
+        attention_mask = batch['attention_mask'][i]
+        labels = batch['labels'][i]
+
+        # 解码序列，包含特殊 token
+        decoded_seq = tokenizer.decode(input_ids, skip_special_tokens=False)
+        print(f"\n序列 {i+1} 解码:", decoded_seq)
+
+        # 检查 padding：padding 部分应为 pad_token_id
+        padding_positions = input_ids == pad_token_id
+        if padding_positions.any():
+            print(f"序列 {i+1} 有 padding，位置: {padding_positions.nonzero(as_tuple=True)[0].tolist()}")
+            print(f"padding 部分是否为 [PAD]: {(input_ids[padding_positions] == pad_token_id).all().item()}")
+            print(f"padding 部分是否不用 EOS: {(input_ids[padding_positions] != eos_token_id).all().item()}")
+
+        # 检查 EOS：有效序列末尾（最后一个 1 后的 token）应为 eos_token_id
+        valid_length = attention_mask.sum().item()  # 有效长度
+        if valid_length > 1:  # 确保序列非空
+            last_valid_token = input_ids[valid_length - 1]
+            print(f"序列 {i+1} 有效部分末尾 token: {last_valid_token}, 是否为 EOS: {last_valid_token == eos_token_id}")
+
+        # 验证 labels 的 padding 部分
+        print(f"序列 {i+1} labels padding 是否为 -100: {(labels[padding_positions] == -100).all().item()}")
 
     break  # 只检查第一个 batch
