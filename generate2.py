@@ -10,9 +10,9 @@ generator = pipeline("text-generation", model=model, tokenizer=tokenizer)  # dev
 
 # 生成序列
 generated_sequences = generator(
-    "EVQ",  # 空输入，生成从头开始
+    "EVQ",  # 生成从头开始
     max_new_tokens=150,  # 最大生成长度
-    num_return_sequences=10000,  # 生成 10000 条序列
+    num_return_sequences=1000,  # 生成 1000 条序列
     do_sample=True,  # 随机采样
     top_k=50,  # Top-k 采样
     top_p=0.95,  # Top-p 采样
