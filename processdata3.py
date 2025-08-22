@@ -267,6 +267,7 @@ training_args = TrainingArguments(
     load_best_model_at_end=True,
     metric_for_best_model="eval_loss",
     fp16=True,
+    early_stopping_patience=5,
     logging_dir="/mnt/ssd3/tongyi/finetuned/logs",
 )
 
