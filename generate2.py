@@ -1,7 +1,7 @@
 from transformers import pipeline, AutoTokenizer, AutoModelForCausalLM
 
 # 加载模型和 tokenizer
-model_path = "/mnt/ssd3/tongyi/finetuned/checkpoint-962"
+model_path = "/mnt/ssd3/tongyi/finetuned/final_model"
 tokenizer = AutoTokenizer.from_pretrained(model_path)
 model = AutoModelForCausalLM.from_pretrained(model_path)
 
