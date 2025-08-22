@@ -268,6 +268,8 @@ training_args = TrainingArguments(
     load_best_model_at_end=True,
     metric_for_best_model="eval_loss",
     fp16=True,
+    dataloader_num_workers=4,  # 多线程数据加载
+    no_cuda=False,
     logging_dir="/mnt/ssd3/tongyi/finetuned/logs",
 )
 
