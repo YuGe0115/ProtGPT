@@ -1,6 +1,7 @@
 import torch
 from torch.utils.data import Dataset, DataLoader
-from transformers import AutoTokenizer, AutoModelForCausalLM
+from transformers import AutoTokenizer, AutoModelForCausalLM, TrainingArguments, Trainer
+from transformers import EarlyStoppingCallback
 from sklearn.model_selection import train_test_split
 
 # 加载ProtGPT2 tokenizer
@@ -267,7 +268,6 @@ training_args = TrainingArguments(
     load_best_model_at_end=True,
     metric_for_best_model="eval_loss",
     fp16=True,
-    early_stopping_patience=5,
     logging_dir="/mnt/ssd3/tongyi/finetuned/logs",
 )
 
@@ -278,6 +278,7 @@ trainer = Trainer(
     train_dataset=train_dataset,
     eval_dataset=val_dataset,
     data_collator=collate_fn,
+    callbacks=[EarlyStoppingCallback(early_stopping_patience=3)],
 )
 
 # 训练
