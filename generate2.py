@@ -11,8 +11,8 @@ generator = pipeline("text-generation", model=model, tokenizer=tokenizer)  # dev
 # 生成序列
 generated_sequences = generator(
     "EVQ",  # 空输入，生成从头开始
-    max_length=150,  # 最大生成长度（根据抗体序列长度调整）
-    num_return_sequences=5,  # 生成 5 条序列
+    max_new_tokens=150,  # 最大生成长度
+    num_return_sequences=10000,  # 生成 10000 条序列
     do_sample=True,  # 随机采样
     top_k=50,  # Top-k 采样
     top_p=0.95,  # Top-p 采样
@@ -26,5 +26,5 @@ for i, seq in enumerate(generated_sequences):
 # 保存生成序列到文件
 with open("/mnt/ssd3/tongyi/result/generated_sequences.txt", "w") as f:
     for i, seq in enumerate(generated_sequences):
-        f.write(f"序列 {i+1}: {seq['generated_text']}\n")
-print("生成序列已保存到 /mnt/ssd3/tongyi/result/generated_sequences.txt")
+        f.write(f"{seq['generated_text']}\n")
+print("生成序列已保存到 /mnt/ssd3/tongyi/result/generated_sequences1.txt")
