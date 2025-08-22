@@ -10,9 +10,9 @@ generator = pipeline("text-generation", model=model, tokenizer=tokenizer)  # dev
 
 # 生成序列
 generated_sequences = generator(
-    "EVQ",  # 生成从头开始
+    "QVQ",  # 生成从头开始
     max_new_tokens=150,  # 最大生成长度
-    num_return_sequences=1000,  # 生成 1000 条序列
+    num_return_sequences=2000,  # 生成 2000 条序列
     do_sample=True,  # 随机采样
     top_k=30,  # Top-k 采样
     top_p=0.7,  # Top-p 采样
@@ -24,7 +24,7 @@ for i, seq in enumerate(generated_sequences):
     print(f"生成序列 {i+1}: {seq['generated_text']}")
 
 # 保存生成序列到文件
-with open("/mnt/ssd3/tongyi/result/generated_sequences1.txt", "w") as f:
+with open("/mnt/ssd3/tongyi/result/generated_sequences2.txt", "w") as f:
     for i, seq in enumerate(generated_sequences):
         f.write(f"{seq['generated_text']}\n")
 print("生成序列已保存到 /mnt/ssd3/tongyi/result/generated_sequences1.txt")
